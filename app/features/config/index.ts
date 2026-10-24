@@ -8,12 +8,12 @@ export default {
     /**
      * The URL to the source code repository.
      */
-    sourceURL: 'https://github.com/jitsi/jitsi-meet-electron',
+    sourceURL: 'https://github.com/mangoeshomeservice-stack/meetlanka-ai',
 
     /**
      * Application name.
      */
-    appName: 'Jitsi Meet',
+    appName: 'MEET UP',
 
     /**
     * The prefix for application protocol.
@@ -34,7 +34,7 @@ export default {
     /**
      * URL to send feedback.
      */
-    feedbackURL: 'https://github.com/jitsi/jitsi-meet-electron/issues',
+    feedbackURL: 'https://github.com/mangoeshomeservice-stack/meetlanka-ai/issues',
 
     /**
      * The URL of Privacy Policy Page.
