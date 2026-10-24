@@ -1,5 +1,7 @@
 name: MEET UP CI
 
+# Rebuild the redesigned MEET UP launcher.
+
 on:
   # Build the development branch as well as master.
   push:
