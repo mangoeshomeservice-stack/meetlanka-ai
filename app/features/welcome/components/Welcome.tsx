@@ -19,12 +19,71 @@ import { Body, Form, Header, Label, Wrapper } from '../styled';
 
 const MainFieldText = styled(FieldText)`
     input {
-        height: 3em;
+        background: #111e35;
+        border: 1px solid #40516d;
+        border-radius: 12px;
+        box-sizing: border-box;
+        color: #fff;
+        font-size: 16px;
+        height: 54px;
+        padding: 0 16px;
+    }
+    input:focus {
+        border-color: #64b5ff;
+        outline: 2px solid rgba(100, 181, 255, 0.2);
     }
 `;
 
 const MainGoButton = styled(Button)`
-    height: 3em;
+    background: #2563eb;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    height: 54px;
+    &:hover { background: #1d4ed8; }
+`;
+
+const Hero = styled.div`
+    max-width: 700px;
+    padding: 64px 32px 8px;
+`;
+
+const Eyebrow = styled.div`
+    color: #78b7ff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+`;
+
+const HeroTitle = styled.h1`
+    color: #f8fafc;
+    font-size: clamp(36px, 5vw, 62px);
+    letter-spacing: -2px;
+    line-height: 1.12;
+    margin: 16px 0;
+`;
+
+const HeroDescription = styled.p`
+    color: #b6c5da;
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+`;
+
+const FeatureStrip = styled.div`
+    color: #a6bad3;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 13px;
+    gap: 12px;
+    margin-top: 24px;
+    span {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 8px 12px;
+    }
 `;
 
 interface IProps extends WithTranslation {
@@ -115,7 +174,17 @@ class Welcome extends Component<IProps, IWelcomeState> {
         return (
             <Page navigation = { <Navbar /> }>
                 <Wrapper>
-                    { this._renderHeader() }
+                    <Hero>
+                        <Eyebrow>MEET UP · DESKTOP MEETINGS</Eyebrow>
+                        <HeroTitle>Meet better. Connect anywhere.</HeroTitle>
+                        <HeroDescription>Start a secure video meeting or join your team with a room name or invitation link.</HeroDescription>
+                        { this._renderHeader() }
+                        <FeatureStrip>
+                            <span>● HD video &amp; audio</span>
+                            <span>● Screen sharing</span>
+                            <span>● In-meeting chat</span>
+                        </FeatureStrip>
+                    </Hero>
                     { this._renderBody() }
                 </Wrapper>
             </Page>
@@ -230,12 +299,10 @@ class Welcome extends Component<IProps, IWelcomeState> {
     _renderHeader() {
         const locationState = this.props.location?.state;
         const locationError = locationState?.error;
-        const { t } = this.props;
-
         return (
             <Header>
                 <Form onSubmit = { this._onFormSubmit }>
-                    <Label>{ t('enterConferenceNameOrUrl') } </Label>
+                    <Label>Meeting room name or invite link </Label>
                     <MainFieldText
                         autoFocus = { true }
                         isInvalid = { locationError }
@@ -249,7 +316,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
                         appearance = 'primary'
                         onClick = { this._onJoin }
                         type = 'button'>
-                        { t('go') }
+                        Start or join meeting
                     </MainGoButton>
                 </Form>
             </Header>
