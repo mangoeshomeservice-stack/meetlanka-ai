@@ -18,73 +18,126 @@ import { Body, Form, Header, Label, Wrapper } from '../styled';
 
 
 const MainFieldText = styled(FieldText)`
+    flex: 1;
+    min-width: 0;
     input {
-        background: #111e35;
-        border: 1px solid #40516d;
-        border-radius: 12px;
+        background: rgba(5, 16, 40, 0.75);
+        border: 1px solid #6586b7;
+        border-radius: 13px;
         box-sizing: border-box;
-        color: #fff;
-        font-size: 16px;
-        height: 54px;
-        padding: 0 16px;
+        color: white;
+        font-size: 17px;
+        height: 62px;
+        padding: 0 20px;
     }
-    input:focus {
-        border-color: #64b5ff;
-        outline: 2px solid rgba(100, 181, 255, 0.2);
-    }
+    input:focus { border-color: #28c4ff; outline: 2px solid #286dff55; }
 `;
 
 const MainGoButton = styled(Button)`
-    background: #2563eb;
-    border-radius: 12px;
+    background: linear-gradient(115deg, #06b6ed, #2156f5);
+    border: 0;
+    border-radius: 13px;
     font-size: 16px;
     font-weight: 700;
-    height: 54px;
-    &:hover { background: #1d4ed8; }
+    height: 62px;
+    min-width: 210px;
+    &:hover { filter: brightness(1.15); }
 `;
 
-const Hero = styled.div`
-    max-width: 700px;
-    padding: 64px 32px 8px;
+const Hero = styled.main`
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 48px 28px;
+    position: relative;
+    text-align: center;
+    z-index: 1;
 `;
 
-const Eyebrow = styled.div`
-    color: #78b7ff;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    text-transform: uppercase;
+const Brand = styled.div`
+    align-items: center;
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 30px;
+`;
+
+const BrandName = styled.div`
+    color: white;
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    span { background: linear-gradient(90deg, #06d7ed, #b33cff); background-clip: text; -webkit-text-fill-color: transparent; }
 `;
 
 const HeroTitle = styled.h1`
-    color: #f8fafc;
-    font-size: clamp(36px, 5vw, 62px);
+    color: #fff;
+    font-size: clamp(38px, 5vw, 66px);
+    font-weight: 850;
     letter-spacing: -2px;
-    line-height: 1.12;
-    margin: 16px 0;
+    line-height: 1.13;
+    margin: 0 0 20px;
+    span { background: linear-gradient(100deg, #b85bff, #06c9ff); background-clip: text; -webkit-text-fill-color: transparent; }
 `;
 
 const HeroDescription = styled.p`
-    color: #b6c5da;
-    font-size: 17px;
-    line-height: 1.6;
-    margin: 0 0 24px;
+    color: #d7e2f4;
+    font-size: 20px;
+    line-height: 1.5;
+    margin: 0 0 32px;
 `;
 
 const FeatureStrip = styled.div`
-    color: #a6bad3;
     display: flex;
     flex-wrap: wrap;
-    font-size: 13px;
-    gap: 12px;
-    margin-top: 24px;
-    span {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 20px;
-        padding: 8px 12px;
-    }
+    gap: 18px;
+    justify-content: center;
+    margin-top: 42px;
+    width: 100%;
 `;
+
+const FeatureCard = styled.div`
+    background: #0e2452a8;
+    border: 1px solid #2963bb66;
+    border-radius: 20px;
+    box-sizing: border-box;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 185px;
+    padding: 24px;
+    span { color: #36adff; display: block; font-size: 30px; margin-bottom: 10px; }
+`;
+
+const MeetingPanel = styled.div`
+    background: #14306485;
+    border: 1px solid #398cff;
+    border-radius: 22px;
+    box-sizing: border-box;
+    max-width: 950px;
+    padding: 24px;
+    width: 100%;
+`;
+
+const BrandMark = () => (
+    <svg aria-label = 'MEET UP logo' height = '95' viewBox = '0 0 110 100' width = '105'>
+        <defs>
+            <linearGradient id = 'meetupMarkGradient' x1 = '0' x2 = '1' y1 = '1' y2 = '0'>
+                <stop offset = '0%' stopColor = '#00dce9' />
+                <stop offset = '50%' stopColor = '#2563ff' />
+                <stop offset = '100%' stopColor = '#e13df5' />
+            </linearGradient>
+        </defs>
+        <path d = 'M12 81 V21 Q12 9 24 18 L54 46 L83 18 Q96 8 96 25 V81' fill = 'none' stroke = 'url(#meetupMarkGradient)' strokeLinecap = 'round' strokeLinejoin = 'round' strokeWidth = '17' />
+        <path d = 'M5 78 Q51 103 105 69' fill = 'none' stroke = '#16d4f7' strokeLinecap = 'round' strokeWidth = '5' />
+        <circle cx = '79' cy = '48' fill = 'white' r = '5' />
+        <circle cx = '91' cy = '48' fill = 'white' r = '4' />
+        <path d = 'M70 63 Q79 49 88 63' fill = 'none' stroke = 'white' strokeLinecap = 'round' strokeWidth = '5' />
+    </svg>
+);
 
 interface IProps extends WithTranslation {
     _serverURL?: string;
@@ -175,14 +228,17 @@ class Welcome extends Component<IProps, IWelcomeState> {
             <Page navigation = { <Navbar /> }>
                 <Wrapper>
                     <Hero>
-                        <Eyebrow>MEET UP · DESKTOP MEETINGS</Eyebrow>
-                        <HeroTitle>Meet better. Connect anywhere.</HeroTitle>
-                        <HeroDescription>Start a secure video meeting or join your team with a room name or invitation link.</HeroDescription>
-                        { this._renderHeader() }
+                        <Brand>
+                            <BrandMark />
+                            <BrandName>MEET <span>UP</span></BrandName>
+                        </Brand>
+                        <HeroTitle>Video Meetings<br />for <span>Everyone</span></HeroTitle>
+                        <HeroDescription>Meet, collaborate, teach and work together<br />with high-quality video and audio.</HeroDescription>
+                        <MeetingPanel>{ this._renderHeader() }</MeetingPanel>
                         <FeatureStrip>
-                            <span>● HD video &amp; audio</span>
-                            <span>● Screen sharing</span>
-                            <span>● In-meeting chat</span>
+                            <FeatureCard><span>▣</span>HD Video Calls</FeatureCard>
+                            <FeatureCard><span>♧</span>Many Participants</FeatureCard>
+                            <FeatureCard><span>▤</span>Screen Sharing</FeatureCard>
                         </FeatureStrip>
                     </Hero>
                     { this._renderBody() }
@@ -302,7 +358,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
         return (
             <Header>
                 <Form onSubmit = { this._onFormSubmit }>
-                    <Label>Meeting room name or invite link </Label>
+                    <Label>Enter a meeting room name or invitation link</Label>
                     <MainFieldText
                         autoFocus = { true }
                         isInvalid = { locationError }
@@ -316,7 +372,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
                         appearance = 'primary'
                         onClick = { this._onJoin }
                         type = 'button'>
-                        Start or join meeting
+                        Join Meeting
                     </MainGoButton>
                 </Form>
             </Header>
