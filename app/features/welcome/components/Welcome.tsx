@@ -112,6 +112,31 @@ const FeatureCard = styled.div`
     span { color: #36adff; display: block; font-size: 30px; margin-bottom: 10px; }
 `;
 
+const QuickActions = styled.div`
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 8px 0 24px;
+    max-width: 950px;
+    width: 100%;
+    @media (max-width: 780px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+`;
+
+const QuickAction = styled.button`
+    background: rgba(20, 48, 100, 0.8);
+    border: 1px solid #3973c7;
+    border-radius: 18px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    min-height: 112px;
+    padding: 16px 10px;
+    &:hover { background: #2453a0; }
+    &:disabled { cursor: not-allowed; opacity: 0.55; }
+    span { color: #4bcaff; display: block; font-size: 28px; margin-bottom: 10px; }
+`;
+
 const MeetingPanel = styled.div`
     background: #14306485;
     border: 1px solid #398cff;
@@ -234,6 +259,12 @@ class Welcome extends Component<IProps, IWelcomeState> {
                         </Brand>
                         <HeroTitle>Video Meetings<br />for <span>Everyone</span></HeroTitle>
                         <HeroDescription>Meet, collaborate, teach and work together<br />with high-quality video and audio.</HeroDescription>
+                        <QuickActions>
+                            <QuickAction onClick = { () => this._onJoinNewMeeting() } type = 'button'><span>▣</span>New Meeting</QuickAction>
+                            <QuickAction onClick = { () => document.getElementById('meetup-room-input')?.focus() } type = 'button'><span>➜</span>Join Meeting</QuickAction>
+                            <QuickAction disabled = { true } title = 'Scheduling coming soon' type = 'button'><span>▦</span>Schedule (soon)</QuickAction>
+                            <QuickAction disabled = { true } title = 'Screen sharing is available inside a meeting' type = 'button'><span>▤</span>Share in call</QuickAction>
+                        </QuickActions>
                         <MeetingPanel>{ this._renderHeader() }</MeetingPanel>
                         <FeatureStrip>
                             <FeatureCard><span>▣</span>HD Video Calls</FeatureCard>
@@ -304,6 +335,18 @@ class Welcome extends Component<IProps, IWelcomeState> {
      *
      * @returns {void}
      */
+    _onJoinNewMeeting() {
+        const conference = createConferenceObjectFromURL(
+            generateRoomWithoutSeparator(),
+            this.props._serverURL || config.defaultServerURL
+        );
+
+        if (conference) {
+            this.props.dispatch(addRecentListEntry(conference));
+            window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+        }
+    }
+
     _onJoin() {
         const inputURL = this.state.url || this.state.generatedRoomname;
         const conference = createConferenceObjectFromURL(
@@ -361,6 +404,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
                     <Label>Enter a meeting room name or invitation link</Label>
                     <MainFieldText
                         autoFocus = { true }
+                        id = 'meetup-room-input'
                         isInvalid = { locationError }
                         isLabelHidden = { true }
                         onChange = { this._onURLChange }
