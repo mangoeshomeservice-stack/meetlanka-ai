@@ -261,7 +261,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
                         <HeroDescription>Meet, collaborate, teach and work together<br />with high-quality video and audio.</HeroDescription>
                         <QuickActions>
                             <QuickAction onClick = { () => this._onJoinNewMeeting() } type = 'button'><span>▣</span>New Meeting</QuickAction>
-                            <QuickAction onClick = { () => document.getElementById('meetup-room-input')?.focus() } type = 'button'><span>➜</span>Join Meeting</QuickAction>
+                            <QuickAction onClick = { () => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus() } type = 'button'><span>➜</span>Join Meeting</QuickAction>
                             <QuickAction disabled = { true } title = 'Scheduling coming soon' type = 'button'><span>▦</span>Schedule (soon)</QuickAction>
                             <QuickAction disabled = { true } title = 'Screen sharing is available inside a meeting' type = 'button'><span>▤</span>Share in call</QuickAction>
                         </QuickActions>
@@ -398,13 +398,13 @@ class Welcome extends Component<IProps, IWelcomeState> {
     _renderHeader() {
         const locationState = this.props.location?.state;
         const locationError = locationState?.error;
+
         return (
             <Header>
                 <Form onSubmit = { this._onFormSubmit }>
                     <Label>Enter a meeting room name or invitation link</Label>
                     <MainFieldText
                         autoFocus = { true }
-                        id = 'meetup-room-input'
                         isInvalid = { locationError }
                         isLabelHidden = { true }
                         onChange = { this._onURLChange }
