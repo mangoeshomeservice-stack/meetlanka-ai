@@ -1,10 +1,10 @@
 {
-  "name": "jitsi-meet-electron",
+  "name": "meet-up",
   "version": "2026.10.0",
-  "description": "Electron application for Jitsi Meet",
+  "description": "MEET UP desktop video meetings",
   "main": "./build/main.js",
-  "productName": "Jitsi Meet",
-  "desktopName": "org.jitsi.jitsi-meet",
+  "productName": "MEET UP",
+  "desktopName": "com.meetup.desktop",
   "private": true,
   "scripts": {
     "start": "node ./esbuild.js --dev && concurrently \"npm:watch\" \"electron ./build/main.js\"",
@@ -21,8 +21,8 @@
     "node": ">=24.0.0"
   },
   "build": {
-    "appId": "org.jitsi.jitsi-meet",
-    "productName": "Jitsi Meet",
+    "appId": "com.meetup.desktop",
+    "productName": "MEET UP",
     "generateUpdatesFilesForAllChannels": true,
     "npmRebuild": false,
     "files": [
