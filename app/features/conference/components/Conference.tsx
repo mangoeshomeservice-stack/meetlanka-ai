@@ -7,6 +7,7 @@ import {
     setupScreenSharingRender
 } from '@jitsi/electron-sdk/renderer';
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -19,6 +20,40 @@ import { parseURLParams } from '../../utils/parseURLParams';
 import { conferenceEnded, conferenceJoined } from '../actions';
 import JitsiMeetExternalAPI from '../external_api';
 import { LoadingIndicator, Wrapper } from '../styled';
+
+const MeetingShell = styled.div`
+    background: #08142b;
+    height: 100vh;
+    overflow: hidden;
+`;
+
+const MeetingHeader = styled.header`
+    align-items: center;
+    background: linear-gradient(100deg, #091733, #162d64);
+    border-bottom: 1px solid #34528a;
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    font-family: Arial, sans-serif;
+    height: 58px;
+    justify-content: space-between;
+    padding: 0 22px;
+`;
+
+const MeetingBrand = styled.strong`
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    span { color: #39c9f5; }
+`;
+
+const MeetingInfo = styled.span`
+    color: #b9d1f0;
+    font-size: 13px;
+`;
+
+const MeetingFrame = styled.div`
+    height: calc(100vh - 58px);
+`;
 
 interface IProps {
     _alwaysOnTopWindowEnabled?: boolean;
@@ -120,9 +155,17 @@ class Conference extends Component<IProps, IConferenceState> {
      */
     render() {
         return (
-            <Wrapper innerRef = { this._ref }>
-                {this._maybeRenderLoadingIndicator()}
-            </Wrapper>
+            <MeetingShell>
+                <MeetingHeader>
+                    <MeetingBrand>MEET <span>UP</span></MeetingBrand>
+                    <MeetingInfo>Secure video meeting</MeetingInfo>
+                </MeetingHeader>
+                <MeetingFrame>
+                    <Wrapper innerRef = { this._ref }>
+                        {this._maybeRenderLoadingIndicator()}
+                    </Wrapper>
+                </MeetingFrame>
+            </MeetingShell>
         );
     }
 
