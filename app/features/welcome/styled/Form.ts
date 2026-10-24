@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
 export default styled.form`
+    align-items: stretch;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 14px;
     margin: 0;
-    max-width: 580px;
     width: 100%;
+    > * { min-width: 0; }
 `;
