@@ -1,11 +1,11 @@
 name: CI
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the master branch
+  # Build the development branch as well as master.
   push:
     branches:
       - master
+      - feature/meet-up-branding
   pull_request:
     branches:
       - master
