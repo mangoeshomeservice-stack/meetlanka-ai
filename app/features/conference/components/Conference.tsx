@@ -51,8 +51,18 @@ const MeetingInfo = styled.span`
     font-size: 13px;
 `;
 
+const HostNotice = styled.div`
+    background: #132c53;
+    border-bottom: 1px solid #34528a;
+    color: #dcecff;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    padding: 9px 22px;
+    a { color: #57d6ff; }
+`;
+
 const MeetingFrame = styled.div`
-    height: calc(100vh - 58px);
+    height: calc(100vh - 92px);
 `;
 
 interface IProps {
@@ -160,6 +170,9 @@ class Conference extends Component<IProps, IConferenceState> {
                     <MeetingBrand>MEET <span>UP</span></MeetingBrand>
                     <MeetingInfo>Secure video meeting</MeetingInfo>
                 </MeetingHeader>
+                <HostNotice>
+                    Starting a meeting on meet.jit.si may require a moderator to sign in. If asked, use the Jitsi Log-in button in the meeting window.
+                </HostNotice>
                 <MeetingFrame>
                     <Wrapper innerRef = { this._ref }>
                         {this._maybeRenderLoadingIndicator()}
