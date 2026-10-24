@@ -32,7 +32,7 @@
       "!main.js"
     ],
     "mac": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "MEET-UP.${ext}",
       "target": [
         {
           "arch": "universal",
@@ -59,10 +59,10 @@
       "hardenedRuntime": false
     },
     "linux": {
-      "artifactName": "jitsi-meet-${arch}.${ext}",
+      "artifactName": "meet-up-${arch}.${ext}",
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
-      "description": "Jitsi Meet Desktop App",
-      "executableName": "jitsi-meet",
+      "description": "MEET UP Desktop Video Meetings",
+      "executableName": "meet-up",
       "target": [
         {
           "arch": "x64",
@@ -83,7 +83,7 @@
       ]
     },
     "win": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "MEET-UP-${arch}.${ext}",
       "target": [
         {
           "arch": [
