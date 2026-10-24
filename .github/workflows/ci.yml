@@ -1,4 +1,4 @@
-name: CI
+name: MEET UP CI
 
 on:
   # Build the development branch as well as master.
