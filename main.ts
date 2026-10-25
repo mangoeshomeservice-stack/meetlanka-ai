@@ -627,6 +627,9 @@ ipcMain.on('open-meeting-window', (event, conference) => {
             enableBlinkFeatures: 'WebAssemblyCSP',
             contextIsolation: true,
             nodeIntegration: false,
+            // Keep Jitsi's Electron cookies/storage between app launches.
+            // This does not share Chrome authentication or bypass moderator sign-in.
+            partition: 'persist:meet-up-jitsi',
             preload: path.resolve(basePath, './build/preload.js'),
             sandbox: true
         }
