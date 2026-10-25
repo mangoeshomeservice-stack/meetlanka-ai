@@ -18,14 +18,181 @@ import { Body, Form, Header, Label, Wrapper } from '../styled';
 
 
 const MainFieldText = styled(FieldText)`
+    flex: 1;
+    min-width: 0;
     input {
-        height: 3em;
+        background: rgba(5, 16, 40, 0.75);
+        border: 1px solid #6586b7;
+        border-radius: 13px;
+        box-sizing: border-box;
+        color: white;
+        font-size: 17px;
+        height: 62px;
+        padding: 0 20px;
     }
+    input:focus { border-color: #28c4ff; outline: 2px solid #286dff55; }
 `;
 
 const MainGoButton = styled(Button)`
-    height: 3em;
+    background: linear-gradient(115deg, #06b6ed, #2156f5);
+    border: 0;
+    border-radius: 13px;
+    font-size: 16px;
+    font-weight: 700;
+    height: 62px;
+    min-width: 210px;
+    &:hover { filter: brightness(1.15); }
 `;
+
+const Hero = styled.main`
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 48px 28px;
+    position: relative;
+    text-align: center;
+    z-index: 1;
+`;
+
+const Brand = styled.div`
+    align-items: center;
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 30px;
+`;
+
+const BrandName = styled.div`
+    color: white;
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    span { background: linear-gradient(90deg, #06d7ed, #b33cff); background-clip: text; -webkit-text-fill-color: transparent; }
+`;
+
+const HeroTitle = styled.h1`
+    color: #fff;
+    font-size: clamp(38px, 5vw, 66px);
+    font-weight: 850;
+    letter-spacing: -2px;
+    line-height: 1.13;
+    margin: 0 0 20px;
+    span { background: linear-gradient(100deg, #b85bff, #06c9ff); background-clip: text; -webkit-text-fill-color: transparent; }
+`;
+
+const HeroDescription = styled.p`
+    color: #d7e2f4;
+    font-size: 20px;
+    line-height: 1.5;
+    margin: 0 0 32px;
+`;
+
+const FeatureStrip = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 42px;
+    width: 100%;
+`;
+
+const FeatureCard = styled.div`
+    background: #0e2452a8;
+    border: 1px solid #2963bb66;
+    border-radius: 20px;
+    box-sizing: border-box;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 185px;
+    padding: 24px;
+    span { color: #36adff; display: block; font-size: 30px; margin-bottom: 10px; }
+`;
+
+const QuickActions = styled.div`
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 8px 0 24px;
+    max-width: 950px;
+    width: 100%;
+    @media (max-width: 780px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+`;
+
+const QuickAction = styled.button`
+    background: rgba(20, 48, 100, 0.8);
+    border: 1px solid #3973c7;
+    border-radius: 18px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    min-height: 112px;
+    padding: 16px 10px;
+    &:hover { background: #2453a0; }
+    &:disabled { cursor: not-allowed; opacity: 0.55; }
+    span { color: #4bcaff; display: block; font-size: 28px; margin-bottom: 10px; }
+`;
+
+const MeetingPanel = styled.div`
+    background: #14306485;
+    border: 1px solid #398cff;
+    border-radius: 22px;
+    box-sizing: border-box;
+    max-width: 950px;
+    padding: 24px;
+    width: 100%;
+`;
+
+const AccountLink = styled.button`
+    background: #16366c;
+    border: 1px solid #4c7bc3;
+    cursor: pointer;
+    border-radius: 24px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 11px 17px;
+    position: absolute;
+    right: 24px;
+    text-decoration: none;
+    top: 18px;
+    &:hover { background: #2453a0; }
+    &:focus-visible { outline: 2px solid #4bcaff; }
+`;
+
+const SchedulePanel = styled.div`
+    background: #10254d;
+    border: 1px solid #3973c7;
+    border-radius: 16px;
+    color: white;
+    margin: 12px auto;
+    max-width: 900px;
+    padding: 18px;
+    width: 100%;
+    input { background: #07152e; border: 1px solid #6586b7; border-radius: 8px; color: white; margin: 6px; padding: 10px; }
+    button { background: #1d62cc; border: 0; border-radius: 8px; color: white; cursor: pointer; margin: 6px; padding: 10px 16px; }
+`;
+
+const BrandMark = () => (
+    <svg aria-label = 'MEET UP logo' height = '95' viewBox = '0 0 110 100' width = '105'>
+        <defs>
+            <linearGradient id = 'meetupMarkGradient' x1 = '0' x2 = '1' y1 = '1' y2 = '0'>
+                <stop offset = '0%' stopColor = '#00dce9' />
+                <stop offset = '50%' stopColor = '#2563ff' />
+                <stop offset = '100%' stopColor = '#e13df5' />
+            </linearGradient>
+        </defs>
+        <path d = 'M12 81 V21 Q12 9 24 18 L54 46 L83 18 Q96 8 96 25 V81' fill = 'none' stroke = 'url(#meetupMarkGradient)' strokeLinecap = 'round' strokeLinejoin = 'round' strokeWidth = '17' />
+        <path d = 'M5 78 Q51 103 105 69' fill = 'none' stroke = '#16d4f7' strokeLinecap = 'round' strokeWidth = '5' />
+        <circle cx = '79' cy = '48' fill = 'white' r = '5' />
+        <circle cx = '91' cy = '48' fill = 'white' r = '4' />
+        <path d = 'M70 63 Q79 49 88 63' fill = 'none' stroke = 'white' strokeLinecap = 'round' strokeWidth = '5' />
+    </svg>
+);
 
 interface IProps extends WithTranslation {
     _serverURL?: string;
@@ -40,9 +207,17 @@ interface IProps extends WithTranslation {
 }
 
 interface IWelcomeState {
+    accountOpen: boolean;
     animateTimeoutId?: ReturnType<typeof setTimeout>;
+    displayName: string;
     generatedRoomname: string;
+    historyOpen: boolean;
+    meetingHistory: Array<{ joinedAt: string; room: string; serverURL: string; }>;
     roomPlaceholder: string;
+    scheduleDate: string;
+    scheduleName: string;
+    scheduleOpen: boolean;
+    scheduledMeetings: Array<{ date: string; room: string; }>;
     updateTimeoutId?: ReturnType<typeof setTimeout>;
     url: string;
 }
@@ -75,6 +250,14 @@ class Welcome extends Component<IProps, IWelcomeState> {
         this.state = {
             animateTimeoutId: undefined,
             generatedRoomname: '',
+            accountOpen: false,
+            displayName: '',
+            historyOpen: false,
+            meetingHistory: [],
+            scheduleDate: '',
+            scheduleName: '',
+            scheduleOpen: false,
+            scheduledMeetings: [],
             roomPlaceholder: '',
             updateTimeoutId: undefined,
             url
@@ -95,6 +278,29 @@ class Welcome extends Component<IProps, IWelcomeState> {
      */
     componentDidMount() {
         this._updateRoomname();
+        try {
+            this.setState({ displayName: localStorage.getItem('meet-up-display-name') || '' });
+        } catch (error) {
+            // A guest profile can be used without persistent storage.
+        }
+        try {
+            const history = JSON.parse(localStorage.getItem('meet-up-history') || '[]');
+
+            if (Array.isArray(history)) {
+                this.setState({ meetingHistory: history.filter(item => typeof item.room === 'string' && typeof item.serverURL === 'string' && typeof item.joinedAt === 'string').slice(0, 30) });
+            }
+        } catch (error) {
+            // Ignore invalid local history data.
+        }
+        try {
+            const saved = JSON.parse(localStorage.getItem('meet-up-scheduled-meetings') || '[]');
+
+            if (Array.isArray(saved)) {
+                this.setState({ scheduledMeetings: saved.filter(item => typeof item.room === 'string' && typeof item.date === 'string').slice(0, 30) });
+            }
+        } catch (error) {
+            // Ignore invalid saved schedules.
+        }
     }
 
     /**
@@ -115,7 +321,51 @@ class Welcome extends Component<IProps, IWelcomeState> {
         return (
             <Page navigation = { <Navbar /> }>
                 <Wrapper>
-                    { this._renderHeader() }
+                    <Hero>
+                        <AccountLink onClick = { () => this.setState({ accountOpen: !this.state.accountOpen }) } title = 'MEET UP local profile' type = 'button'>Account / Profile</AccountLink>
+                        {this.state.accountOpen && <SchedulePanel>
+                            <strong>MEET UP Profile</strong>
+                            <p>Guest profile on this device. This is not a Jitsi or cloud account login.</p>
+                            <input aria-label = 'Display name' maxLength = { 80 } onChange = { event => this.setState({ displayName: event.currentTarget.value }) } placeholder = 'Your display name' type = 'text' value = { this.state.displayName } />
+                            <button onClick = { () => this._saveDisplayName() } type = 'button'>Save Profile</button>
+                            <a href = 'https://meet.jit.si/' rel = 'noopener noreferrer' target = '_blank'>Open Jitsi Sign In ↗</a>
+                        </SchedulePanel>}
+                        <Brand>
+                            <BrandMark />
+                            <BrandName>MEET <span>UP</span></BrandName>
+                        </Brand>
+                        <HeroTitle>Video Meetings<br />for <span>Everyone</span></HeroTitle>
+                        <HeroDescription>Meet, collaborate, teach and work together<br />with high-quality video and audio.</HeroDescription>
+                        <QuickActions>
+                            <QuickAction onClick = { () => this._onJoinNewMeeting() } type = 'button'><span>▣</span>New Meeting</QuickAction>
+                            <QuickAction onClick = { () => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus() } type = 'button'><span>➜</span>Join Meeting</QuickAction>
+                            <QuickAction onClick = { () => this.setState({ scheduleOpen: !this.state.scheduleOpen }) } type = 'button'><span>▦</span>Schedule Meeting</QuickAction>
+                            <QuickAction onClick = { () => this.setState({ historyOpen: !this.state.historyOpen }) } type = 'button'><span>▤</span>Meeting History</QuickAction>
+                        </QuickActions>
+                        {this.state.scheduleOpen && <SchedulePanel>
+                            <strong>Schedule a meeting</strong>
+                            <div>
+                                <input aria-label = 'Meeting room name' onChange = { event => this.setState({ scheduleName: event.currentTarget.value }) } placeholder = 'Meeting name' type = 'text' value = { this.state.scheduleName } />
+                                <input aria-label = 'Meeting date and time' onChange = { event => this.setState({ scheduleDate: event.currentTarget.value }) } type = 'datetime-local' value = { this.state.scheduleDate } />
+                                <button onClick = { () => this._saveScheduledMeeting() } type = 'button'>Save Meeting</button>
+                            </div>
+                            <small>Saved on this device only. No automatic invitations or reminders.</small>
+                            {this.state.scheduledMeetings.map((meeting, index) => <div key = { `${meeting.room}-${index}` }>{meeting.room} — {new Date(meeting.date).toLocaleString()} <button onClick = { () => this._joinScheduledMeeting(meeting.room) } type = 'button'>Join</button><button aria-label = { `Remove ${meeting.room}` } onClick = { () => this._removeScheduledMeeting(index) } type = 'button'>Remove</button></div>)}
+                        </SchedulePanel>}
+                        {this.state.historyOpen && <SchedulePanel>
+                            <strong>Meeting History</strong>
+                            <p>Recent meetings on this device (maximum 30).</p>
+                            {this.state.meetingHistory.length === 0 && <p>No meetings saved yet.</p>}
+                            {this.state.meetingHistory.map((meeting, index) => <div key = { `${meeting.room}-${meeting.joinedAt}-${index}` }>{meeting.room} — {new Date(meeting.joinedAt).toLocaleString()} <button onClick = { () => this._openTrackedMeeting(createConferenceObjectFromURL(meeting.room, meeting.serverURL)) } type = 'button'>Rejoin</button></div>)}
+                            <button onClick = { () => this._clearMeetingHistory() } type = 'button'>Clear History</button>
+                        </SchedulePanel>}
+                        <MeetingPanel>{ this._renderHeader() }</MeetingPanel>
+                        <FeatureStrip>
+                            <FeatureCard><span>▣</span>HD Video Calls</FeatureCard>
+                            <FeatureCard><span>♧</span>Many Participants</FeatureCard>
+                            <FeatureCard><span>▤</span>Screen Sharing</FeatureCard>
+                        </FeatureStrip>
+                    </Hero>
                     { this._renderBody() }
                 </Wrapper>
             </Page>
@@ -179,6 +429,82 @@ class Welcome extends Component<IProps, IWelcomeState> {
      *
      * @returns {void}
      */
+    _saveScheduledMeeting() {
+        const room = this.state.scheduleName.trim();
+        const date = this.state.scheduleDate;
+
+        if (!/^[a-zA-Z0-9_-]{3,100}$/.test(room) || !date || new Date(date).getTime() <= Date.now()) {
+            window.alert('Enter a room name (3–100 letters/numbers) and a future date/time.');
+
+            return;
+        }
+        const scheduledMeetings = [ ...this.state.scheduledMeetings, { date, room } ].slice(-30);
+
+        localStorage.setItem('meet-up-scheduled-meetings', JSON.stringify(scheduledMeetings));
+        this.setState({ scheduledMeetings, scheduleName: '', scheduleDate: '' });
+    }
+
+    _removeScheduledMeeting(index: number) {
+        const scheduledMeetings = this.state.scheduledMeetings.filter((_, itemIndex) => itemIndex !== index);
+
+        localStorage.setItem('meet-up-scheduled-meetings', JSON.stringify(scheduledMeetings));
+        this.setState({ scheduledMeetings });
+    }
+
+    _saveDisplayName() {
+        try {
+            localStorage.setItem('meet-up-display-name', this.state.displayName.trim());
+            this.setState({ displayName: this.state.displayName.trim(), accountOpen: false });
+        } catch (error) {
+            window.alert('Unable to save the profile on this device.');
+        }
+    }
+
+    _clearMeetingHistory() {
+        localStorage.removeItem('meet-up-history');
+        this.setState({ meetingHistory: [] });
+    }
+
+    _openTrackedMeeting(conference: ReturnType<typeof createConferenceObjectFromURL>) {
+        if (!conference) {
+            return;
+        }
+        const record = {
+            room: conference.room,
+            serverURL: conference.serverURL,
+            joinedAt: new Date().toISOString()
+        };
+        const meetingHistory = [ record, ...this.state.meetingHistory.filter(item => item.room !== record.room || item.serverURL !== record.serverURL) ].slice(0, 30);
+
+        try {
+            localStorage.setItem('meet-up-history', JSON.stringify(meetingHistory));
+            this.setState({ meetingHistory });
+        } catch (error) {
+            // Local storage may be unavailable; joining must still work.
+        }
+        this.props.dispatch(addRecentListEntry(conference));
+        window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+    }
+
+    _joinScheduledMeeting(room: string) {
+        const conference = createConferenceObjectFromURL(room, this.props._serverURL || config.defaultServerURL);
+
+        if (conference) {
+            this._openTrackedMeeting(conference);
+        }
+    }
+
+    _onJoinNewMeeting() {
+        const conference = createConferenceObjectFromURL(
+            generateRoomWithoutSeparator(),
+            this.props._serverURL || config.defaultServerURL
+        );
+
+        if (conference) {
+            this._openTrackedMeeting(conference);
+        }
+    }
+
     _onJoin() {
         const inputURL = this.state.url || this.state.generatedRoomname;
         const conference = createConferenceObjectFromURL(
@@ -191,8 +517,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
             return;
         }
 
-        this.props.dispatch(addRecentListEntry(conference));
-        window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+        this._openTrackedMeeting(conference);
     }
 
 
@@ -230,12 +555,11 @@ class Welcome extends Component<IProps, IWelcomeState> {
     _renderHeader() {
         const locationState = this.props.location?.state;
         const locationError = locationState?.error;
-        const { t } = this.props;
 
         return (
             <Header>
                 <Form onSubmit = { this._onFormSubmit }>
-                    <Label>{ t('enterConferenceNameOrUrl') } </Label>
+                    <Label>Enter a meeting room name or invitation link</Label>
                     <MainFieldText
                         autoFocus = { true }
                         isInvalid = { locationError }
@@ -249,7 +573,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
                         appearance = 'primary'
                         onClick = { this._onJoin }
                         type = 'button'>
-                        { t('go') }
+                        Join Meeting
                     </MainGoButton>
                 </Form>
             </Header>

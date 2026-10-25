@@ -9,6 +9,7 @@ import {
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import styled from 'styled-components';
 
 import i18n from '../../../i18n';
 import type { IConference, IState } from '../../../types';
@@ -20,6 +21,90 @@ import { conferenceEnded, conferenceJoined } from '../actions';
 import JitsiMeetExternalAPI from '../external_api';
 import { LoadingIndicator, Wrapper } from '../styled';
 
+const MeetingShell = styled.div`
+    background: #08142b;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
+`;
+
+const MeetingHeader = styled.header`
+    align-items: center;
+    background: linear-gradient(100deg, #091733, #162d64);
+    border-bottom: 1px solid #34528a;
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    font-family: Arial, sans-serif;
+    flex-shrink: 0;
+    gap: 14px;
+    min-height: 58px;
+    justify-content: space-between;
+    padding: 0 22px;
+`;
+
+const MeetingBrand = styled.strong`
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    span { color: #39c9f5; }
+`;
+
+const MeetingInfo = styled.span`
+    color: #b9d1f0;
+    font-size: 13px;
+    white-space: nowrap;
+`;
+
+const HostNotice = styled.div`
+    background: #132c53;
+    border-bottom: 1px solid #34528a;
+    color: #dcecff;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    flex-shrink: 0;
+    line-height: 1.4;
+    padding: 9px 22px;
+    a { color: #57d6ff; }
+`;
+
+const MeetingFrame = styled.div`
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+`;
+
+const ControlBar = styled.div`
+    align-items: center;
+    background: #0b1d3b;
+    border-top: 1px solid #34528a;
+    display: flex;
+    flex-shrink: 0;
+    gap: 10px;
+    min-height: 68px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    white-space: nowrap;
+`;
+
+const ControlButton = styled.button`
+    background: linear-gradient(130deg, #1b3765, #214d80);
+    border: 1px solid #4368a1;
+    border-radius: 12px;
+    color: white;
+    flex-shrink: 0;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 11px 14px;
+    transition: background 0.15s ease;
+    &:hover:not(:disabled) { background: #2b5595; }
+    &:focus-visible { outline: 2px solid #59d7ff; outline-offset: 2px; }
+    &:disabled { cursor: not-allowed; opacity: 0.45; }
+`;
+
 interface IProps {
     _alwaysOnTopWindowEnabled?: boolean;
     _disableAGC?: boolean;
@@ -30,7 +115,12 @@ interface IProps {
 }
 
 interface IConferenceState {
+    audioMuted: boolean;
     isLoading: boolean;
+    isModerator: boolean;
+    joined: boolean;
+    notice: string;
+    videoMuted: boolean;
 }
 
 /**
@@ -51,7 +141,12 @@ class Conference extends Component<IProps, IConferenceState> {
         super(props);
 
         this.state = {
-            isLoading: true
+            isLoading: true,
+            joined: false,
+            audioMuted: false,
+            videoMuted: false,
+            notice: '',
+            isModerator: false
         };
 
         this._ref = React.createRef();
@@ -76,8 +171,8 @@ class Conference extends Component<IProps, IConferenceState> {
             serverURL
         };
 
+        this.setState({ joined: false, isLoading: true, notice: '', isModerator: false });
         this._loadConference();
-
 
     }
 
@@ -120,9 +215,30 @@ class Conference extends Component<IProps, IConferenceState> {
      */
     render() {
         return (
-            <Wrapper innerRef = { this._ref }>
-                {this._maybeRenderLoadingIndicator()}
-            </Wrapper>
+            <MeetingShell>
+                <MeetingHeader>
+                    <MeetingBrand>MEET <span>UP</span></MeetingBrand>
+                    <MeetingInfo>{this.state.joined ? (this.state.isModerator ? 'Connected · Moderator' : 'Connected · Participant') : 'Waiting to join'}</MeetingInfo>
+                </MeetingHeader>
+                <HostNotice>
+                    On meet.jit.si, hosts may need to sign in. Meeting passwords and lobby controls are managed by Jitsi moderators, not by MEET UP.
+                </HostNotice>
+                <MeetingFrame>
+                    <Wrapper innerRef = { this._ref }>
+                        {this._maybeRenderLoadingIndicator()}
+                    </Wrapper>
+                </MeetingFrame>
+                <ControlBar aria-label = 'MEET UP meeting controls' role = 'toolbar'>
+                    <MeetingInfo>Mic · Camera · Speaker: use Jitsi's device settings (gear icon) inside the meeting.</MeetingInfo>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleShareScreen') }>Share Screen</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleChat') }>Chat</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleParticipantsPane') }>Participants</ControlButton>
+                    <ControlButton disabled = { !this.state.joined || !this.state.isModerator } onClick = { () => this._api?.executeCommand('toggleSecurityDialog') }>Security Settings</ControlButton>
+                    <ControlButton onClick = { () => this._copyMeetingLink() }>Copy Invite Link</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('hangup') }>Leave Meeting</ControlButton>
+                    <MeetingInfo role = 'status'>{this.state.notice}</MeetingInfo>
+                </ControlBar>
+            </MeetingShell>
         );
     }
 
@@ -164,6 +280,15 @@ class Conference extends Component<IProps, IConferenceState> {
         const interfaceConfigOverwrite = {
             SHOW_CHROME_EXTENSION_BANNER: false
         };
+        // Keep Jitsi's native device selection and mic/camera controls in the iframe.
+        // Avoid duplicating audio/video controls in the outer MEET UP toolbar.
+        const displayName = (() => {
+            try {
+                return localStorage.getItem('meet-up-display-name')?.trim() || '';
+            } catch (error) {
+                return '';
+            }
+        })();
         let jwt = jwtFromSearch;
 
         Object.entries(hashParameters).forEach(([ key, value ]) => {
@@ -182,6 +307,7 @@ class Conference extends Component<IProps, IConferenceState> {
             jwt,
             parentNode: this._ref.current,
             roomName,
+            userInfo: { displayName },
             sandbox: 'allow-scripts allow-same-origin allow-popups allow-forms allow-downloads'
         };
 
@@ -202,9 +328,31 @@ class Conference extends Component<IProps, IConferenceState> {
         });
         this._api.on('videoConferenceJoined',
             () => {
+                this.setState({ joined: true, notice: '' });
                 this.props.dispatch(conferenceJoined(this._conference));
             }
         );
+        this._api.on('audioMuteStatusChanged', ({ muted }: { muted: boolean; }) => {
+            this.setState({ audioMuted: muted });
+        });
+        this._api.on('videoMuteStatusChanged', ({ muted }: { muted: boolean; }) => {
+            this.setState({ videoMuted: muted });
+        });
+        this._api.on('videoConferenceLeft', () => {
+            this.setState({ joined: false, isModerator: false });
+        });
+        this._api.on('participantRoleChanged', ({ id, role }: { id?: string; role?: string; }) => {
+            // Jitsi sends role changes for participants; check local role through the API.
+            if (role && id && id === this._api?.getMyUserId()) {
+                this.setState({ isModerator: role === 'moderator' });
+            }
+        });
+        this._api.on('passwordRequired', () => {
+            this.setState({ notice: 'Meeting password required. Enter it in the Jitsi dialog.' });
+        });
+        this._api.on('errorOccurred', () => {
+            this.setState({ notice: 'Meeting error. Check your connection or try joining again.' });
+        });
 
         // Setup Jitsi Meet Electron SDK on this renderer. These run in the page
         // ("main world") next to the iframe API and reach the main process only
@@ -239,6 +387,18 @@ class Conference extends Component<IProps, IConferenceState> {
      * @returns {void}
      * @private
      */
+    async _copyMeetingLink() {
+        const link = new URL(this._conference.room, this._conference.serverURL).href;
+
+        try {
+            await navigator.clipboard.writeText(link);
+            this.setState({ notice: 'Invite link copied' });
+        } catch (error) {
+            console.error('Could not copy invite link', error);
+            this.setState({ notice: 'Copy link unavailable; use the meeting invite menu' });
+        }
+    }
+
     _onVideoConferenceEnded() {
         this.props.dispatch(conferenceEnded(this._conference));
         window.jitsiElectronApp.ipc.send('close-meeting-window');

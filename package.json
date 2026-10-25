@@ -1,10 +1,10 @@
 {
-  "name": "jitsi-meet-electron",
+  "name": "meet-up",
   "version": "2026.10.0",
-  "description": "Electron application for Jitsi Meet",
+  "description": "MEET UP desktop video meetings",
   "main": "./build/main.js",
-  "productName": "Jitsi Meet",
-  "desktopName": "org.jitsi.jitsi-meet",
+  "productName": "MEET UP",
+  "desktopName": "com.meetup.desktop",
   "private": true,
   "scripts": {
     "start": "node ./esbuild.js --dev && concurrently \"npm:watch\" \"electron ./build/main.js\"",
@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .js,.ts,.tsx",
     "lint-fix": "eslint . --ext .js,.ts,.tsx --fix",
     "type-check": "tsc --noEmit",
-    "build": "npm run type-check && node ./esbuild.js",
+    "build": "node scripts/generate-brand-icons.cjs && npm run type-check && node ./esbuild.js",
     "dist": "npm run build && electron-builder",
     "postinstall": "patch-package",
     "watch": "node ./esbuild.js renderer --dev --watch"
@@ -21,8 +21,8 @@
     "node": ">=24.0.0"
   },
   "build": {
-    "appId": "org.jitsi.jitsi-meet",
-    "productName": "Jitsi Meet",
+    "appId": "com.meetup.desktop",
+    "productName": "MEET UP",
     "generateUpdatesFilesForAllChannels": true,
     "npmRebuild": false,
     "files": [
@@ -32,7 +32,7 @@
       "!main.js"
     ],
     "mac": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "MEET-UP.${ext}",
       "target": [
         {
           "arch": "universal",
@@ -47,9 +47,9 @@
       "darkModeSupport": true,
       "entitlements": "resources/entitlements.mac.plist",
       "extendInfo": {
-        "NSCameraUsageDescription": "Jitsi Meet requires access to your camera in order to make video-calls.",
-        "NSMicrophoneUsageDescription": "Jitsi Meet requires access to your microphone in order to make calls (audio/video).",
-        "NSAudioCaptureUsageDescription": "Jitsi Meet can share your system audio via screensharing if you enable it.",
+        "NSCameraUsageDescription": "MEET UP requires camera access for video calls.",
+        "NSMicrophoneUsageDescription": "MEET UP requires microphone access for audio calls.",
+        "NSAudioCaptureUsageDescription": "MEET UP can share system audio when screen sharing is enabled.",
         "LSMultipleInstancesProhibited": true
       }
     },
@@ -59,10 +59,10 @@
       "hardenedRuntime": false
     },
     "linux": {
-      "artifactName": "jitsi-meet-${arch}.${ext}",
+      "artifactName": "meet-up-${arch}.${ext}",
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
-      "description": "Jitsi Meet Desktop App",
-      "executableName": "jitsi-meet",
+      "description": "MEET UP Desktop Video Meetings",
+      "executableName": "meet-up",
       "target": [
         {
           "arch": "x64",
@@ -83,7 +83,7 @@
       ]
     },
     "win": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "MEET-UP-${arch}.${ext}",
       "target": [
         {
           "arch": [
@@ -93,7 +93,8 @@
           ],
           "target": "nsis"
         }
-      ]
+      ],
+      "icon": "resources/icon.ico"
     },
     "toolsets": {
       "appimage": "1.0.3"
@@ -116,7 +117,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/jitsi/jitsi-meet-electron"
+    "url": "https://github.com/mangoeshomeservice-stack/meetlanka-ai.git"
   },
   "keywords": [
     "jingle",
@@ -125,7 +126,10 @@
     "electron",
     "jitsi-meet"
   ],
-  "author": "Jitsi Team <support@jitsi.org>",
+  "author": {
+    "name": "MEET UP Contributors",
+    "email": "meet-up-maintainers@users.noreply.github.com"
+  },
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {

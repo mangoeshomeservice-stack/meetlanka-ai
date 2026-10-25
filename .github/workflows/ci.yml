@@ -1,11 +1,13 @@
-name: CI
+name: MEET UP CI
+
+# Rebuild the redesigned MEET UP launcher.
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the master branch
+  # Build the development branch as well as master.
   push:
     branches:
       - master
+      - feature/meet-up-branding
   pull_request:
     branches:
       - master
@@ -29,10 +31,10 @@ jobs:
       with:
         name: linux-binaries
         path: |
-          dist/jitsi-meet-amd64.deb
-          dist/jitsi-meet-x86_64.AppImage
-          dist/jitsi-meet-arm64.deb
-          dist/jitsi-meet-arm64.AppImage
+          dist/meet-up-amd64.deb
+          dist/meet-up-x86_64.AppImage
+          dist/meet-up-arm64.deb
+          dist/meet-up-arm64.AppImage
           dist/latest-linux.yml
           dist/latest-linux-arm64.yml
   build-mac:
@@ -64,8 +66,8 @@ jobs:
       with:
         name: mac-binaries
         path: |
-          dist/jitsi-meet.dmg
-          dist/jitsi-meet.zip
+          dist/MEET-UP.dmg
+          dist/MEET-UP.zip
           dist/latest-mac.yml
   build-windows:
     name: Windows
@@ -85,7 +87,7 @@ jobs:
       with:
         name: windows-binaries
         path: |
-          dist/jitsi-meet.exe
+          dist/MEET-UP-*.exe
           dist/latest.yml
   lint:
     runs-on: ubuntu-latest

@@ -6,6 +6,8 @@
 declare class JitsiMeetExternalAPI {
     constructor(domain: string, options?: any);
     on(event: string, listener: (...args: any[]) => void): void;
+    executeCommand(command: string, ...args: any[]): void;
+    getMyUserId(): string | undefined;
     dispose(): void;
 }
 

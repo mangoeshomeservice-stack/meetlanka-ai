@@ -1,9 +1,9 @@
-
 import styled from 'styled-components';
 
 export default styled.span`
-    color: white;
+    color: #e2e8f0;
     display: block;
-    font-weight: bold;
+    font-size: 14px;
+    font-weight: 600;
     margin: 0;
 `;

@@ -35,6 +35,9 @@ import pkgJson from './package.json';
 // `node: { __dirname: true }`, so this indirection replaces that behaviour.
 const rootDir = path.resolve(__dirname, '..');
 
+// Explicit name prevents Electron from showing the upstream Jitsi title.
+app.setName('MEET UP');
+
 const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1);
 
 /**
@@ -240,6 +243,7 @@ function createJitsiMeetWindow() {
         y: windowState.y,
         width: 480,
         height: windowState.height,
+        title: 'MEET UP',
         icon: path.resolve(basePath, './resources/icon.png'),
         minWidth: 480,
         minHeight: 600,
@@ -254,6 +258,10 @@ function createJitsiMeetWindow() {
     };
 
     mainWindow = new BrowserWindow(options);
+    mainWindow.on('page-title-updated', event => {
+        event.preventDefault();
+        mainWindow?.setTitle('MEET UP');
+    });
     windowState.manage(mainWindow);
     mainWindow.loadURL(indexURL);
 
@@ -609,6 +617,7 @@ ipcMain.on('open-meeting-window', (event, conference) => {
     meetingWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        title: 'MEET UP · Meeting',
         minWidth: 800,
         minHeight: 600,
         icon: path.resolve(basePath, './resources/icon.png'),
@@ -618,9 +627,16 @@ ipcMain.on('open-meeting-window', (event, conference) => {
             enableBlinkFeatures: 'WebAssemblyCSP',
             contextIsolation: true,
             nodeIntegration: false,
+            // Keep Jitsi's Electron cookies/storage between app launches.
+            // This does not share Chrome authentication or bypass moderator sign-in.
+            partition: 'persist:meet-up-jitsi',
             preload: path.resolve(basePath, './build/preload.js'),
             sandbox: true
         }
+    });
+    meetingWindow.on('page-title-updated', titleEvent => {
+        titleEvent.preventDefault();
+        meetingWindow?.setTitle('MEET UP · Meeting');
     });
 
     meetingWindow.loadURL(meetingURL);
