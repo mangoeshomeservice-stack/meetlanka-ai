@@ -35,6 +35,9 @@ import pkgJson from './package.json';
 // `node: { __dirname: true }`, so this indirection replaces that behaviour.
 const rootDir = path.resolve(__dirname, '..');
 
+// Explicit name prevents Electron from showing the upstream Jitsi title.
+app.setName('MEET UP');
+
 const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1);
 
 /**
@@ -240,6 +243,7 @@ function createJitsiMeetWindow() {
         y: windowState.y,
         width: 480,
         height: windowState.height,
+        title: 'MEET UP',
         icon: path.resolve(basePath, './resources/icon.png'),
         minWidth: 480,
         minHeight: 600,
@@ -254,6 +258,10 @@ function createJitsiMeetWindow() {
     };
 
     mainWindow = new BrowserWindow(options);
+    mainWindow.on('page-title-updated', event => {
+        event.preventDefault();
+        mainWindow?.setTitle('MEET UP');
+    });
     windowState.manage(mainWindow);
     mainWindow.loadURL(indexURL);
 
