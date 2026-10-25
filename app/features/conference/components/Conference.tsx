@@ -81,8 +81,8 @@ const ControlBar = styled.div`
     border-top: 1px solid #34528a;
     display: flex;
     flex-shrink: 0;
-    gap: 9px;
-    min-height: 64px;
+    gap: 10px;
+    min-height: 68px;
     justify-content: flex-start;
     overflow-x: auto;
     padding: 8px 16px;
@@ -91,9 +91,9 @@ const ControlBar = styled.div`
 `;
 
 const ControlButton = styled.button`
-    background: #1b3765;
+    background: linear-gradient(130deg, #1b3765, #214d80);
     border: 1px solid #4368a1;
-    border-radius: 10px;
+    border-radius: 12px;
     color: white;
     flex-shrink: 0;
     cursor: pointer;
@@ -229,11 +229,10 @@ class Conference extends Component<IProps, IConferenceState> {
                     </Wrapper>
                 </MeetingFrame>
                 <ControlBar aria-label = 'MEET UP meeting controls' role = 'toolbar'>
-                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleAudio') }>{this.state.audioMuted ? 'Unmute' : 'Mute'}</ControlButton>
-                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleVideo') }>{this.state.videoMuted ? 'Start Camera' : 'Stop Camera'}</ControlButton>
+                    <MeetingInfo>Mic · Camera · Speaker: use Jitsi's device settings (gear icon) inside the meeting.</MeetingInfo>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleShareScreen') }>Share Screen</ControlButton>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleChat') }>Chat</ControlButton>
-                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleParticipantsPane') }>People</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleParticipantsPane') }>Participants</ControlButton>
                     <ControlButton disabled = { !this.state.joined || !this.state.isModerator } onClick = { () => this._api?.executeCommand('toggleSecurityDialog') }>Security Settings</ControlButton>
                     <ControlButton onClick = { () => this._copyMeetingLink() }>Copy Invite Link</ControlButton>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('hangup') }>Leave Meeting</ControlButton>
@@ -281,6 +280,15 @@ class Conference extends Component<IProps, IConferenceState> {
         const interfaceConfigOverwrite = {
             SHOW_CHROME_EXTENSION_BANNER: false
         };
+        // Keep Jitsi's native device selection and mic/camera controls in the iframe.
+        // Avoid duplicating audio/video controls in the outer MEET UP toolbar.
+        const displayName = (() => {
+            try {
+                return localStorage.getItem('meet-up-display-name')?.trim() || '';
+            } catch (error) {
+                return '';
+            }
+        })();
         let jwt = jwtFromSearch;
 
         Object.entries(hashParameters).forEach(([ key, value ]) => {
@@ -299,6 +307,7 @@ class Conference extends Component<IProps, IConferenceState> {
             jwt,
             parentNode: this._ref.current,
             roomName,
+            userInfo: { displayName },
             sandbox: 'allow-scripts allow-same-origin allow-popups allow-forms allow-downloads'
         };
 
