@@ -7,9 +7,9 @@ import {
     setupScreenSharingRender
 } from '@jitsi/electron-sdk/renderer';
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import styled from 'styled-components';
 
 import i18n from '../../../i18n';
 import type { IConference, IState } from '../../../types';
@@ -96,12 +96,12 @@ interface IProps {
 }
 
 interface IConferenceState {
-    isLoading: boolean;
-    joined: boolean;
     audioMuted: boolean;
-    videoMuted: boolean;
-    notice: string;
+    isLoading: boolean;
     isModerator: boolean;
+    joined: boolean;
+    notice: string;
+    videoMuted: boolean;
 }
 
 /**
@@ -304,7 +304,7 @@ class Conference extends Component<IProps, IConferenceState> {
                 this.props.dispatch(conferenceJoined(this._conference));
             }
         );
-        this._api.on('audioMuteStatusChanged', ({ muted }: { muted: boolean }) => {
+        this._api.on('audioMuteStatusChanged', ({ muted }: { muted: boolean; }) => {
             this.setState({ audioMuted: muted });
         });
         this._api.on('videoMuteStatusChanged', ({ muted }: { muted: boolean }) => {
@@ -313,7 +313,7 @@ class Conference extends Component<IProps, IConferenceState> {
         this._api.on('videoConferenceLeft', () => {
             this.setState({ joined: false, isModerator: false });
         });
-        this._api.on('participantRoleChanged', ({ id, role }: { id?: string; role?: string }) => {
+        this._api.on('participantRoleChanged', ({ id, role }: { id?: string; role?: string; }) => {
             // Jitsi sends role changes for participants; check local role through the API.
             if (role && id && id === this._api?.getMyUserId()) {
                 this.setState({ isModerator: role === 'moderator' });
