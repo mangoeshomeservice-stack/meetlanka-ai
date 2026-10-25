@@ -326,7 +326,7 @@ class Conference extends Component<IProps, IConferenceState> {
         this._api.on('audioMuteStatusChanged', ({ muted }: { muted: boolean; }) => {
             this.setState({ audioMuted: muted });
         });
-        this._api.on('videoMuteStatusChanged', ({ muted }: { muted: boolean }) => {
+        this._api.on('videoMuteStatusChanged', ({ muted }: { muted: boolean; }) => {
             this.setState({ videoMuted: muted });
         });
         this._api.on('videoConferenceLeft', () => {
