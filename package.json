@@ -126,7 +126,10 @@
     "electron",
     "jitsi-meet"
   ],
-  "author": "MEET UP Contributors",
+  "author": {
+    "name": "MEET UP Contributors",
+    "email": "meet-up-maintainers@users.noreply.github.com"
+  },
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {
