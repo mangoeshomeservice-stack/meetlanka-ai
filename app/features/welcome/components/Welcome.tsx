@@ -207,12 +207,12 @@ interface IProps extends WithTranslation {
 }
 
 interface IWelcomeState {
-    animateTimeoutId?: ReturnType<typeof setTimeout>;
-    generatedRoomname: string;
     accountOpen: boolean;
+    animateTimeoutId?: ReturnType<typeof setTimeout>;
     displayName: string;
+    generatedRoomname: string;
     historyOpen: boolean;
-    meetingHistory: Array<{ room: string; serverURL: string; joinedAt: string; }>;
+    meetingHistory: Array<{ joinedAt: string; room: string; serverURL: string; }>;
     roomPlaceholder: string;
     scheduleDate: string;
     scheduleName: string;
