@@ -631,8 +631,8 @@ ipcMain.on('open-meeting-window', (event, conference) => {
             sandbox: true
         }
     });
-    meetingWindow.on('page-title-updated', event => {
-        event.preventDefault();
+    meetingWindow.on('page-title-updated', titleEvent => {
+        titleEvent.preventDefault();
         meetingWindow?.setTitle('MEET UP · Meeting');
     });
 
