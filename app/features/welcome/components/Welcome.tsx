@@ -147,9 +147,10 @@ const MeetingPanel = styled.div`
     width: 100%;
 `;
 
-const AccountLink = styled.a`
+const AccountLink = styled.button`
     background: #16366c;
     border: 1px solid #4c7bc3;
+    cursor: pointer;
     border-radius: 24px;
     color: #fff;
     font-size: 13px;
@@ -208,6 +209,8 @@ interface IProps extends WithTranslation {
 interface IWelcomeState {
     animateTimeoutId?: ReturnType<typeof setTimeout>;
     generatedRoomname: string;
+    accountOpen: boolean;
+    displayName: string;
     historyOpen: boolean;
     meetingHistory: Array<{ room: string; serverURL: string; joinedAt: string; }>;
     roomPlaceholder: string;
@@ -247,6 +250,8 @@ class Welcome extends Component<IProps, IWelcomeState> {
         this.state = {
             animateTimeoutId: undefined,
             generatedRoomname: '',
+            accountOpen: false,
+            displayName: '',
             historyOpen: false,
             meetingHistory: [],
             scheduleDate: '',
@@ -273,6 +278,11 @@ class Welcome extends Component<IProps, IWelcomeState> {
      */
     componentDidMount() {
         this._updateRoomname();
+        try {
+            this.setState({ displayName: localStorage.getItem('meet-up-display-name') || '' });
+        } catch (error) {
+            // A guest profile can be used without persistent storage.
+        }
         try {
             const history = JSON.parse(localStorage.getItem('meet-up-history') || '[]');
 
@@ -312,7 +322,14 @@ class Welcome extends Component<IProps, IWelcomeState> {
             <Page navigation = { <Navbar /> }>
                 <Wrapper>
                     <Hero>
-                        <AccountLink href = 'https://meet.jit.si/' rel = 'noopener noreferrer' target = '_blank' title = 'Open Jitsi account in your browser'>Account / Sign in ↗</AccountLink>
+                        <AccountLink onClick = { () => this.setState({ accountOpen: !this.state.accountOpen }) } title = 'MEET UP local profile' type = 'button'>Account / Profile</AccountLink>
+                        {this.state.accountOpen && <SchedulePanel>
+                            <strong>MEET UP Profile</strong>
+                            <p>Guest profile on this device. This is not a Jitsi or cloud account login.</p>
+                            <input aria-label = 'Display name' maxLength = { 80 } onChange = { event => this.setState({ displayName: event.currentTarget.value }) } placeholder = 'Your display name' type = 'text' value = { this.state.displayName } />
+                            <button onClick = { () => this._saveDisplayName() } type = 'button'>Save Profile</button>
+                            <a href = 'https://meet.jit.si/' rel = 'noopener noreferrer' target = '_blank'>Open Jitsi Sign In ↗</a>
+                        </SchedulePanel>}
                         <Brand>
                             <BrandMark />
                             <BrandName>MEET <span>UP</span></BrandName>
@@ -432,6 +449,15 @@ class Welcome extends Component<IProps, IWelcomeState> {
 
         localStorage.setItem('meet-up-scheduled-meetings', JSON.stringify(scheduledMeetings));
         this.setState({ scheduledMeetings });
+    }
+
+    _saveDisplayName() {
+        try {
+            localStorage.setItem('meet-up-display-name', this.state.displayName.trim());
+            this.setState({ displayName: this.state.displayName.trim(), accountOpen: false });
+        } catch (error) {
+            window.alert('Unable to save the profile on this device.');
+        }
     }
 
     _clearMeetingHistory() {
