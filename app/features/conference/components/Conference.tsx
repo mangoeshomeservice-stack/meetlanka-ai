@@ -23,7 +23,10 @@ import { LoadingIndicator, Wrapper } from '../styled';
 
 const MeetingShell = styled.div`
     background: #08142b;
+    display: flex;
+    flex-direction: column;
     height: 100vh;
+    min-height: 0;
     overflow: hidden;
 `;
 
@@ -35,7 +38,9 @@ const MeetingHeader = styled.header`
     color: white;
     display: flex;
     font-family: Arial, sans-serif;
-    height: 58px;
+    flex-shrink: 0;
+    gap: 14px;
+    min-height: 58px;
     justify-content: space-between;
     padding: 0 22px;
 `;
@@ -49,6 +54,7 @@ const MeetingBrand = styled.strong`
 const MeetingInfo = styled.span`
     color: #b9d1f0;
     font-size: 13px;
+    white-space: nowrap;
 `;
 
 const HostNotice = styled.div`
@@ -57,12 +63,16 @@ const HostNotice = styled.div`
     color: #dcecff;
     font-family: Arial, sans-serif;
     font-size: 12px;
+    flex-shrink: 0;
+    line-height: 1.4;
     padding: 9px 22px;
     a { color: #57d6ff; }
 `;
 
 const MeetingFrame = styled.div`
-    height: calc(100vh - 146px);
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 `;
 
 const ControlBar = styled.div`
@@ -70,19 +80,28 @@ const ControlBar = styled.div`
     background: #0b1d3b;
     border-top: 1px solid #34528a;
     display: flex;
+    flex-shrink: 0;
     gap: 9px;
-    height: 54px;
-    justify-content: center;
+    min-height: 64px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    white-space: nowrap;
 `;
 
 const ControlButton = styled.button`
     background: #1b3765;
     border: 1px solid #4368a1;
-    border-radius: 8px;
+    border-radius: 10px;
     color: white;
+    flex-shrink: 0;
     cursor: pointer;
     font-size: 12px;
-    padding: 9px 13px;
+    padding: 11px 14px;
+    transition: background 0.15s ease;
+    &:hover:not(:disabled) { background: #2b5595; }
+    &:focus-visible { outline: 2px solid #59d7ff; outline-offset: 2px; }
     &:disabled { cursor: not-allowed; opacity: 0.45; }
 `;
 
@@ -209,7 +228,7 @@ class Conference extends Component<IProps, IConferenceState> {
                         {this._maybeRenderLoadingIndicator()}
                     </Wrapper>
                 </MeetingFrame>
-                <ControlBar>
+                <ControlBar aria-label = 'MEET UP meeting controls' role = 'toolbar'>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleAudio') }>{this.state.audioMuted ? 'Unmute' : 'Mute'}</ControlButton>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleVideo') }>{this.state.videoMuted ? 'Start Camera' : 'Stop Camera'}</ControlButton>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleShareScreen') }>Share Screen</ControlButton>
@@ -217,7 +236,7 @@ class Conference extends Component<IProps, IConferenceState> {
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleParticipantsPane') }>People</ControlButton>
                     <ControlButton disabled = { !this.state.joined || !this.state.isModerator } onClick = { () => this._api?.executeCommand('toggleSecurityDialog') }>Security Settings</ControlButton>
                     <ControlButton onClick = { () => this._copyMeetingLink() }>Copy Invite Link</ControlButton>
-                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('hangup') }>Leave</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('hangup') }>Leave Meeting</ControlButton>
                     <MeetingInfo role = 'status'>{this.state.notice}</MeetingInfo>
                 </ControlBar>
             </MeetingShell>
