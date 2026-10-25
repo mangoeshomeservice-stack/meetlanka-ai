@@ -163,6 +163,19 @@ const AccountLink = styled.a`
     &:focus-visible { outline: 2px solid #4bcaff; }
 `;
 
+const SchedulePanel = styled.div`
+    background: #10254d;
+    border: 1px solid #3973c7;
+    border-radius: 16px;
+    color: white;
+    margin: 12px auto;
+    max-width: 900px;
+    padding: 18px;
+    width: 100%;
+    input { background: #07152e; border: 1px solid #6586b7; border-radius: 8px; color: white; margin: 6px; padding: 10px; }
+    button { background: #1d62cc; border: 0; border-radius: 8px; color: white; cursor: pointer; margin: 6px; padding: 10px 16px; }
+`;
+
 const BrandMark = () => (
     <svg aria-label = 'MEET UP logo' height = '95' viewBox = '0 0 110 100' width = '105'>
         <defs>
@@ -195,6 +208,10 @@ interface IProps extends WithTranslation {
 interface IWelcomeState {
     animateTimeoutId?: ReturnType<typeof setTimeout>;
     generatedRoomname: string;
+    scheduleDate: string;
+    scheduleName: string;
+    scheduleOpen: boolean;
+    scheduledMeetings: Array<{ date: string; room: string; }>;
     roomPlaceholder: string;
     updateTimeoutId?: ReturnType<typeof setTimeout>;
     url: string;
@@ -228,6 +245,10 @@ class Welcome extends Component<IProps, IWelcomeState> {
         this.state = {
             animateTimeoutId: undefined,
             generatedRoomname: '',
+            scheduleDate: '',
+            scheduleName: '',
+            scheduleOpen: false,
+            scheduledMeetings: [],
             roomPlaceholder: '',
             updateTimeoutId: undefined,
             url
@@ -248,6 +269,15 @@ class Welcome extends Component<IProps, IWelcomeState> {
      */
     componentDidMount() {
         this._updateRoomname();
+        try {
+            const saved = JSON.parse(localStorage.getItem('meet-up-scheduled-meetings') || '[]');
+
+            if (Array.isArray(saved)) {
+                this.setState({ scheduledMeetings: saved.filter(item => typeof item.room === 'string' && typeof item.date === 'string').slice(0, 30) });
+            }
+        } catch (error) {
+            // Ignore invalid saved schedules.
+        }
     }
 
     /**
@@ -279,9 +309,19 @@ class Welcome extends Component<IProps, IWelcomeState> {
                         <QuickActions>
                             <QuickAction onClick = { () => this._onJoinNewMeeting() } type = 'button'><span>▣</span>New Meeting</QuickAction>
                             <QuickAction onClick = { () => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus() } type = 'button'><span>➜</span>Join Meeting</QuickAction>
-                            <QuickAction disabled = { true } title = 'Scheduling coming soon' type = 'button'><span>▦</span>Schedule (soon)</QuickAction>
+                            <QuickAction onClick = { () => this.setState({ scheduleOpen: !this.state.scheduleOpen }) } type = 'button'><span>▦</span>Schedule Meeting</QuickAction>
                             <QuickAction disabled = { true } title = 'Screen sharing is available inside a meeting' type = 'button'><span>▤</span>Share in call</QuickAction>
                         </QuickActions>
+                        {this.state.scheduleOpen && <SchedulePanel>
+                            <strong>Schedule a meeting</strong>
+                            <div>
+                                <input aria-label = 'Meeting room name' onChange = { event => this.setState({ scheduleName: event.currentTarget.value }) } placeholder = 'Meeting name' type = 'text' value = { this.state.scheduleName } />
+                                <input aria-label = 'Meeting date and time' onChange = { event => this.setState({ scheduleDate: event.currentTarget.value }) } type = 'datetime-local' value = { this.state.scheduleDate } />
+                                <button onClick = { () => this._saveScheduledMeeting() } type = 'button'>Save Meeting</button>
+                            </div>
+                            <small>Saved on this device only. No automatic invitations or reminders.</small>
+                            {this.state.scheduledMeetings.map((meeting, index) => <div key = { `${meeting.room}-${index}` }>{meeting.room} — {new Date(meeting.date).toLocaleString()} <button onClick = { () => this._joinScheduledMeeting(meeting.room) } type = 'button'>Join</button></div>)}
+                        </SchedulePanel>}
                         <MeetingPanel>{ this._renderHeader() }</MeetingPanel>
                         <FeatureStrip>
                             <FeatureCard><span>▣</span>HD Video Calls</FeatureCard>
@@ -352,6 +392,30 @@ class Welcome extends Component<IProps, IWelcomeState> {
      *
      * @returns {void}
      */
+    _saveScheduledMeeting() {
+        const room = this.state.scheduleName.trim();
+        const date = this.state.scheduleDate;
+
+        if (!/^[a-zA-Z0-9_-]{3,100}$/.test(room) || !date || new Date(date).getTime() <= Date.now()) {
+            window.alert('Enter a room name (3–100 letters/numbers) and a future date/time.');
+
+            return;
+        }
+        const scheduledMeetings = [ ...this.state.scheduledMeetings, { date, room } ].slice(-30);
+
+        localStorage.setItem('meet-up-scheduled-meetings', JSON.stringify(scheduledMeetings));
+        this.setState({ scheduledMeetings, scheduleName: '', scheduleDate: '' });
+    }
+
+    _joinScheduledMeeting(room: string) {
+        const conference = createConferenceObjectFromURL(room, this.props._serverURL || config.defaultServerURL);
+
+        if (conference) {
+            this.props.dispatch(addRecentListEntry(conference));
+            window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+        }
+    }
+
     _onJoinNewMeeting() {
         const conference = createConferenceObjectFromURL(
             generateRoomWithoutSeparator(),
