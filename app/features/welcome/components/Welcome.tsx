@@ -208,6 +208,8 @@ interface IProps extends WithTranslation {
 interface IWelcomeState {
     animateTimeoutId?: ReturnType<typeof setTimeout>;
     generatedRoomname: string;
+    historyOpen: boolean;
+    meetingHistory: Array<{ room: string; serverURL: string; joinedAt: string; }>;
     roomPlaceholder: string;
     scheduleDate: string;
     scheduleName: string;
@@ -245,6 +247,8 @@ class Welcome extends Component<IProps, IWelcomeState> {
         this.state = {
             animateTimeoutId: undefined,
             generatedRoomname: '',
+            historyOpen: false,
+            meetingHistory: [],
             scheduleDate: '',
             scheduleName: '',
             scheduleOpen: false,
@@ -269,6 +273,15 @@ class Welcome extends Component<IProps, IWelcomeState> {
      */
     componentDidMount() {
         this._updateRoomname();
+        try {
+            const history = JSON.parse(localStorage.getItem('meet-up-history') || '[]');
+
+            if (Array.isArray(history)) {
+                this.setState({ meetingHistory: history.filter(item => typeof item.room === 'string' && typeof item.serverURL === 'string' && typeof item.joinedAt === 'string').slice(0, 30) });
+            }
+        } catch (error) {
+            // Ignore invalid local history data.
+        }
         try {
             const saved = JSON.parse(localStorage.getItem('meet-up-scheduled-meetings') || '[]');
 
@@ -310,7 +323,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
                             <QuickAction onClick = { () => this._onJoinNewMeeting() } type = 'button'><span>▣</span>New Meeting</QuickAction>
                             <QuickAction onClick = { () => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus() } type = 'button'><span>➜</span>Join Meeting</QuickAction>
                             <QuickAction onClick = { () => this.setState({ scheduleOpen: !this.state.scheduleOpen }) } type = 'button'><span>▦</span>Schedule Meeting</QuickAction>
-                            <QuickAction disabled = { true } title = 'Screen sharing is available inside a meeting' type = 'button'><span>▤</span>Share in call</QuickAction>
+                            <QuickAction onClick = { () => this.setState({ historyOpen: !this.state.historyOpen }) } type = 'button'><span>▤</span>Meeting History</QuickAction>
                         </QuickActions>
                         {this.state.scheduleOpen && <SchedulePanel>
                             <strong>Schedule a meeting</strong>
@@ -321,6 +334,13 @@ class Welcome extends Component<IProps, IWelcomeState> {
                             </div>
                             <small>Saved on this device only. No automatic invitations or reminders.</small>
                             {this.state.scheduledMeetings.map((meeting, index) => <div key = { `${meeting.room}-${index}` }>{meeting.room} — {new Date(meeting.date).toLocaleString()} <button onClick = { () => this._joinScheduledMeeting(meeting.room) } type = 'button'>Join</button><button aria-label = { `Remove ${meeting.room}` } onClick = { () => this._removeScheduledMeeting(index) } type = 'button'>Remove</button></div>)}
+                        </SchedulePanel>}
+                        {this.state.historyOpen && <SchedulePanel>
+                            <strong>Meeting History</strong>
+                            <p>Recent meetings on this device (maximum 30).</p>
+                            {this.state.meetingHistory.length === 0 && <p>No meetings saved yet.</p>}
+                            {this.state.meetingHistory.map((meeting, index) => <div key = { `${meeting.room}-${meeting.joinedAt}-${index}` }>{meeting.room} — {new Date(meeting.joinedAt).toLocaleString()} <button onClick = { () => this._openTrackedMeeting(createConferenceObjectFromURL(meeting.room, meeting.serverURL)) } type = 'button'>Rejoin</button></div>)}
+                            <button onClick = { () => this._clearMeetingHistory() } type = 'button'>Clear History</button>
                         </SchedulePanel>}
                         <MeetingPanel>{ this._renderHeader() }</MeetingPanel>
                         <FeatureStrip>
@@ -414,12 +434,37 @@ class Welcome extends Component<IProps, IWelcomeState> {
         this.setState({ scheduledMeetings });
     }
 
+    _clearMeetingHistory() {
+        localStorage.removeItem('meet-up-history');
+        this.setState({ meetingHistory: [] });
+    }
+
+    _openTrackedMeeting(conference: ReturnType<typeof createConferenceObjectFromURL>) {
+        if (!conference) {
+            return;
+        }
+        const record = {
+            room: conference.room,
+            serverURL: conference.serverURL,
+            joinedAt: new Date().toISOString()
+        };
+        const meetingHistory = [ record, ...this.state.meetingHistory.filter(item => item.room !== record.room || item.serverURL !== record.serverURL) ].slice(0, 30);
+
+        try {
+            localStorage.setItem('meet-up-history', JSON.stringify(meetingHistory));
+            this.setState({ meetingHistory });
+        } catch (error) {
+            // Local storage may be unavailable; joining must still work.
+        }
+        this.props.dispatch(addRecentListEntry(conference));
+        window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+    }
+
     _joinScheduledMeeting(room: string) {
         const conference = createConferenceObjectFromURL(room, this.props._serverURL || config.defaultServerURL);
 
         if (conference) {
-            this.props.dispatch(addRecentListEntry(conference));
-            window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+            this._openTrackedMeeting(conference);
         }
     }
 
@@ -430,8 +475,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
         );
 
         if (conference) {
-            this.props.dispatch(addRecentListEntry(conference));
-            window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+            this._openTrackedMeeting(conference);
         }
     }
 
@@ -447,8 +491,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
             return;
         }
 
-        this.props.dispatch(addRecentListEntry(conference));
-        window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
+        this._openTrackedMeeting(conference);
     }
 
 
