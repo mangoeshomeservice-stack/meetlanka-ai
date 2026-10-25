@@ -208,11 +208,11 @@ interface IProps extends WithTranslation {
 interface IWelcomeState {
     animateTimeoutId?: ReturnType<typeof setTimeout>;
     generatedRoomname: string;
+    roomPlaceholder: string;
     scheduleDate: string;
     scheduleName: string;
     scheduleOpen: boolean;
     scheduledMeetings: Array<{ date: string; room: string; }>;
-    roomPlaceholder: string;
     updateTimeoutId?: ReturnType<typeof setTimeout>;
     url: string;
 }
@@ -320,7 +320,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
                                 <button onClick = { () => this._saveScheduledMeeting() } type = 'button'>Save Meeting</button>
                             </div>
                             <small>Saved on this device only. No automatic invitations or reminders.</small>
-                            {this.state.scheduledMeetings.map((meeting, index) => <div key = { `${meeting.room}-${index}` }>{meeting.room} — {new Date(meeting.date).toLocaleString()} <button onClick = { () => this._joinScheduledMeeting(meeting.room) } type = 'button'>Join</button></div>)}
+                            {this.state.scheduledMeetings.map((meeting, index) => <div key = { `${meeting.room}-${index}` }>{meeting.room} — {new Date(meeting.date).toLocaleString()} <button onClick = { () => this._joinScheduledMeeting(meeting.room) } type = 'button'>Join</button><button aria-label = { `Remove ${meeting.room}` } onClick = { () => this._removeScheduledMeeting(index) } type = 'button'>Remove</button></div>)}
                         </SchedulePanel>}
                         <MeetingPanel>{ this._renderHeader() }</MeetingPanel>
                         <FeatureStrip>
@@ -405,6 +405,13 @@ class Welcome extends Component<IProps, IWelcomeState> {
 
         localStorage.setItem('meet-up-scheduled-meetings', JSON.stringify(scheduledMeetings));
         this.setState({ scheduledMeetings, scheduleName: '', scheduleDate: '' });
+    }
+
+    _removeScheduledMeeting(index: number) {
+        const scheduledMeetings = this.state.scheduledMeetings.filter((_, itemIndex) => itemIndex !== index);
+
+        localStorage.setItem('meet-up-scheduled-meetings', JSON.stringify(scheduledMeetings));
+        this.setState({ scheduledMeetings });
     }
 
     _joinScheduledMeeting(room: string) {
