@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .js,.ts,.tsx",
     "lint-fix": "eslint . --ext .js,.ts,.tsx --fix",
     "type-check": "tsc --noEmit",
-    "build": "npm run type-check && node ./esbuild.js",
+    "build": "node scripts/generate-brand-icons.cjs && npm run type-check && node ./esbuild.js",
     "dist": "npm run build && electron-builder",
     "postinstall": "patch-package",
     "watch": "node ./esbuild.js renderer --dev --watch"
