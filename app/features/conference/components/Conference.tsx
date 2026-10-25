@@ -101,6 +101,7 @@ interface IConferenceState {
     audioMuted: boolean;
     videoMuted: boolean;
     notice: string;
+    isModerator: boolean;
 }
 
 /**
@@ -125,7 +126,8 @@ class Conference extends Component<IProps, IConferenceState> {
             joined: false,
             audioMuted: false,
             videoMuted: false,
-            notice: ''
+            notice: '',
+            isModerator: false
         };
 
         this._ref = React.createRef();
@@ -150,7 +152,7 @@ class Conference extends Component<IProps, IConferenceState> {
             serverURL
         };
 
-        this.setState({ joined: false, isLoading: true, notice: '' });
+        this.setState({ joined: false, isLoading: true, notice: '', isModerator: false });
         this._loadConference();
 
     }
@@ -197,10 +199,10 @@ class Conference extends Component<IProps, IConferenceState> {
             <MeetingShell>
                 <MeetingHeader>
                     <MeetingBrand>MEET <span>UP</span></MeetingBrand>
-                    <MeetingInfo>{this.state.joined ? 'Connected to meeting' : 'Waiting to join'}</MeetingInfo>
+                    <MeetingInfo>{this.state.joined ? (this.state.isModerator ? 'Connected · Moderator' : 'Connected · Participant') : 'Waiting to join'}</MeetingInfo>
                 </MeetingHeader>
                 <HostNotice>
-                    Starting a meeting on meet.jit.si may require a moderator to sign in. If asked, use the Jitsi Log-in button in the meeting window.
+                    On meet.jit.si, hosts may need to sign in. Meeting passwords and lobby controls are managed by Jitsi moderators, not by MEET UP.
                 </HostNotice>
                 <MeetingFrame>
                     <Wrapper innerRef = { this._ref }>
@@ -213,6 +215,7 @@ class Conference extends Component<IProps, IConferenceState> {
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleShareScreen') }>Share Screen</ControlButton>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleChat') }>Chat</ControlButton>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleParticipantsPane') }>People</ControlButton>
+                    <ControlButton disabled = { !this.state.joined || !this.state.isModerator } onClick = { () => this._api?.executeCommand('toggleSecurityDialog') }>Security Settings</ControlButton>
                     <ControlButton onClick = { () => this._copyMeetingLink() }>Copy Invite Link</ControlButton>
                     <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('hangup') }>Leave</ControlButton>
                     <MeetingInfo role = 'status'>{this.state.notice}</MeetingInfo>
@@ -308,7 +311,19 @@ class Conference extends Component<IProps, IConferenceState> {
             this.setState({ videoMuted: muted });
         });
         this._api.on('videoConferenceLeft', () => {
-            this.setState({ joined: false });
+            this.setState({ joined: false, isModerator: false });
+        });
+        this._api.on('participantRoleChanged', ({ id, role }: { id?: string; role?: string }) => {
+            // Jitsi sends role changes for participants; check local role through the API.
+            if (role && id && id === this._api?.getMyUserId()) {
+                this.setState({ isModerator: role === 'moderator' });
+            }
+        });
+        this._api.on('passwordRequired', () => {
+            this.setState({ notice: 'Meeting password required. Enter it in the Jitsi dialog.' });
+        });
+        this._api.on('errorOccurred', () => {
+            this.setState({ notice: 'Meeting error. Check your connection or try joining again.' });
         });
 
         // Setup Jitsi Meet Electron SDK on this renderer. These run in the page
