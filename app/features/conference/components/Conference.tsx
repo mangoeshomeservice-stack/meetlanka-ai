@@ -62,7 +62,28 @@ const HostNotice = styled.div`
 `;
 
 const MeetingFrame = styled.div`
-    height: calc(100vh - 92px);
+    height: calc(100vh - 146px);
+`;
+
+const ControlBar = styled.div`
+    align-items: center;
+    background: #0b1d3b;
+    border-top: 1px solid #34528a;
+    display: flex;
+    gap: 9px;
+    height: 54px;
+    justify-content: center;
+`;
+
+const ControlButton = styled.button`
+    background: #1b3765;
+    border: 1px solid #4368a1;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 9px 13px;
+    &:disabled { cursor: not-allowed; opacity: 0.45; }
 `;
 
 interface IProps {
@@ -76,6 +97,10 @@ interface IProps {
 
 interface IConferenceState {
     isLoading: boolean;
+    joined: boolean;
+    audioMuted: boolean;
+    videoMuted: boolean;
+    notice: string;
 }
 
 /**
@@ -96,7 +121,11 @@ class Conference extends Component<IProps, IConferenceState> {
         super(props);
 
         this.state = {
-            isLoading: true
+            isLoading: true,
+            joined: false,
+            audioMuted: false,
+            videoMuted: false,
+            notice: ''
         };
 
         this._ref = React.createRef();
@@ -121,8 +150,8 @@ class Conference extends Component<IProps, IConferenceState> {
             serverURL
         };
 
+        this.setState({ joined: false, isLoading: true, notice: '' });
         this._loadConference();
-
 
     }
 
@@ -168,7 +197,7 @@ class Conference extends Component<IProps, IConferenceState> {
             <MeetingShell>
                 <MeetingHeader>
                     <MeetingBrand>MEET <span>UP</span></MeetingBrand>
-                    <MeetingInfo>Secure video meeting</MeetingInfo>
+                    <MeetingInfo>{this.state.joined ? 'Connected to meeting' : 'Waiting to join'}</MeetingInfo>
                 </MeetingHeader>
                 <HostNotice>
                     Starting a meeting on meet.jit.si may require a moderator to sign in. If asked, use the Jitsi Log-in button in the meeting window.
@@ -178,6 +207,16 @@ class Conference extends Component<IProps, IConferenceState> {
                         {this._maybeRenderLoadingIndicator()}
                     </Wrapper>
                 </MeetingFrame>
+                <ControlBar>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleAudio') }>{this.state.audioMuted ? 'Unmute' : 'Mute'}</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleVideo') }>{this.state.videoMuted ? 'Start Camera' : 'Stop Camera'}</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleShareScreen') }>Share Screen</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleChat') }>Chat</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('toggleParticipantsPane') }>People</ControlButton>
+                    <ControlButton onClick = { () => this._copyMeetingLink() }>Copy Invite Link</ControlButton>
+                    <ControlButton disabled = { !this.state.joined } onClick = { () => this._api?.executeCommand('hangup') }>Leave</ControlButton>
+                    <MeetingInfo role = 'status'>{this.state.notice}</MeetingInfo>
+                </ControlBar>
             </MeetingShell>
         );
     }
@@ -258,9 +297,19 @@ class Conference extends Component<IProps, IConferenceState> {
         });
         this._api.on('videoConferenceJoined',
             () => {
+                this.setState({ joined: true, notice: '' });
                 this.props.dispatch(conferenceJoined(this._conference));
             }
         );
+        this._api.on('audioMuteStatusChanged', ({ muted }: { muted: boolean }) => {
+            this.setState({ audioMuted: muted });
+        });
+        this._api.on('videoMuteStatusChanged', ({ muted }: { muted: boolean }) => {
+            this.setState({ videoMuted: muted });
+        });
+        this._api.on('videoConferenceLeft', () => {
+            this.setState({ joined: false });
+        });
 
         // Setup Jitsi Meet Electron SDK on this renderer. These run in the page
         // ("main world") next to the iframe API and reach the main process only
@@ -295,6 +344,18 @@ class Conference extends Component<IProps, IConferenceState> {
      * @returns {void}
      * @private
      */
+    async _copyMeetingLink() {
+        const link = new URL(this._conference.room, this._conference.serverURL).href;
+
+        try {
+            await navigator.clipboard.writeText(link);
+            this.setState({ notice: 'Invite link copied' });
+        } catch (error) {
+            console.error('Could not copy invite link', error);
+            this.setState({ notice: 'Copy link unavailable; use the meeting invite menu' });
+        }
+    }
+
     _onVideoConferenceEnded() {
         this.props.dispatch(conferenceEnded(this._conference));
         window.jitsiElectronApp.ipc.send('close-meeting-window');
