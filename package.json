@@ -47,9 +47,9 @@
       "darkModeSupport": true,
       "entitlements": "resources/entitlements.mac.plist",
       "extendInfo": {
-        "NSCameraUsageDescription": "Jitsi Meet requires access to your camera in order to make video-calls.",
-        "NSMicrophoneUsageDescription": "Jitsi Meet requires access to your microphone in order to make calls (audio/video).",
-        "NSAudioCaptureUsageDescription": "Jitsi Meet can share your system audio via screensharing if you enable it.",
+        "NSCameraUsageDescription": "MEET UP requires camera access for video calls.",
+        "NSMicrophoneUsageDescription": "MEET UP requires microphone access for audio calls.",
+        "NSAudioCaptureUsageDescription": "MEET UP can share system audio when screen sharing is enabled.",
         "LSMultipleInstancesProhibited": true
       }
     },
@@ -93,7 +93,8 @@
           ],
           "target": "nsis"
         }
-      ]
+      ],
+      "icon": "resources/icon.ico"
     },
     "toolsets": {
       "appimage": "1.0.3"
@@ -116,7 +117,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/jitsi/jitsi-meet-electron"
+    "url": "https://github.com/mangoeshomeservice-stack/meetlanka-ai.git"
   },
   "keywords": [
     "jingle",
@@ -125,7 +126,7 @@
     "electron",
     "jitsi-meet"
   ],
-  "author": "Jitsi Team <support@jitsi.org>",
+  "author": "MEET UP Contributors",
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {
