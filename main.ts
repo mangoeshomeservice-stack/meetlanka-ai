@@ -617,6 +617,7 @@ ipcMain.on('open-meeting-window', (event, conference) => {
     meetingWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        title: 'MEET UP · Meeting',
         minWidth: 800,
         minHeight: 600,
         icon: path.resolve(basePath, './resources/icon.png'),
@@ -629,6 +630,10 @@ ipcMain.on('open-meeting-window', (event, conference) => {
             preload: path.resolve(basePath, './build/preload.js'),
             sandbox: true
         }
+    });
+    meetingWindow.on('page-title-updated', event => {
+        event.preventDefault();
+        meetingWindow?.setTitle('MEET UP · Meeting');
     });
 
     meetingWindow.loadURL(meetingURL);
