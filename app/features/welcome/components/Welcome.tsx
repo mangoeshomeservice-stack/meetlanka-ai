@@ -147,6 +147,22 @@ const MeetingPanel = styled.div`
     width: 100%;
 `;
 
+const AccountLink = styled.a`
+    background: #16366c;
+    border: 1px solid #4c7bc3;
+    border-radius: 24px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 11px 17px;
+    position: absolute;
+    right: 24px;
+    text-decoration: none;
+    top: 18px;
+    &:hover { background: #2453a0; }
+    &:focus-visible { outline: 2px solid #4bcaff; }
+`;
+
 const BrandMark = () => (
     <svg aria-label = 'MEET UP logo' height = '95' viewBox = '0 0 110 100' width = '105'>
         <defs>
@@ -253,6 +269,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
             <Page navigation = { <Navbar /> }>
                 <Wrapper>
                     <Hero>
+                        <AccountLink href = 'https://meet.jit.si/' rel = 'noopener noreferrer' target = '_blank' title = 'Open Jitsi account in your browser'>Account / Sign in ↗</AccountLink>
                         <Brand>
                             <BrandMark />
                             <BrandName>MEET <span>UP</span></BrandName>
